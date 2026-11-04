@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+<img src="public/logo.png" width="112" alt="VaultSpark logo" />
 
-First, run the development server:
+# VaultSpark
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**A zero-knowledge password manager with a live strength analyser, a password generator and an encrypted vault.**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Next.js · React · Tailwind CSS · Firebase Auth + Firestore
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+</div>
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+VaultSpark combines two earlier projects:
 
-## Learn More
+| Origin | What it contributed |
+| --- | --- |
+| [SecureSpark](https://github.com/DarkWizardCK-24/SecureSpark) | Real-time entropy / crack-time analysis and the requirements checklist |
+| [PassVault](https://github.com/DarkWizardCK-24/PassVault) | Credential vault for social accounts and logins (create, read, update, delete) |
 
-To learn more about Next.js, take a look at the following resources:
+Everything you save is encrypted on your device before it is stored. The server only sees ciphertext.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Screenshots
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Mobile
 
-## Deploy on Vercel
+| Sign in | Register | Create vault | Recovery key |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/mobile-login.png" width="180" /> | <img src="docs/screenshots/mobile-register.png" width="180" /> | <img src="docs/screenshots/mobile-setup.png" width="180" /> | <img src="docs/screenshots/mobile-recovery-key.png" width="180" /> |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Vault | Live 2FA codes | Add item | Password history |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/mobile-vault.png" width="180" /> | <img src="docs/screenshots/mobile-vault-2fa.png" width="180" /> | <img src="docs/screenshots/mobile-add-item.png" width="180" /> | <img src="docs/screenshots/mobile-history.png" width="180" /> |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Security audit | Shared vaults | Settings | Unlock |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/mobile-audit.png" width="180" /> | <img src="docs/screenshots/mobile-shared.png" width="180" /> | <img src="docs/screenshots/mobile-settings.png" width="180" /> | <img src="docs/screenshots/mobile-unlock.png" width="180" /> |
+
+| Home | Free tools | Recovery reset | Empty vault |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/mobile-home.png" width="180" /> | <img src="docs/screenshots/mobile-tools.png" width="180" /> | <img src="docs/screenshots/mobile-recovery-reset.png" width="180" /> | <img src="docs/screenshots/mobile-vault-empty.png" width="180" /> |
+
+### Desktop
+
+| | |
+| :---: | :---: |
+| <img src="docs/screenshots/desktop-home.png" width="420" /> | <img src="docs/screenshots/desktop-vault.png" width="420" /> |
+| Home | Vault |
+| <img src="docs/screenshots/desktop-login.png" width="420" /> | <img src="docs/screenshots/desktop-register.png" width="420" /> |
+| Sign in | Register |
+| <img src="docs/screenshots/desktop-add-item.png" width="420" /> | <img src="docs/screenshots/desktop-audit.png" width="420" /> |
+| Add item | Security audit |
+| <img src="docs/screenshots/desktop-shared.png" width="420" /> | <img src="docs/screenshots/desktop-settings.png" width="420" /> |
+| Shared vaults | Settings |
+| <img src="docs/screenshots/desktop-tools.png" width="420" /> | |
+| Free tools | |
+
+## Features
+
+**Your vault**
+- **Social accounts and logins.** One-tap presets for Instagram, Facebook, X, LinkedIn, WhatsApp, GitHub, Netflix, Google and more, shown with brand-coloured tiles.
+- **Secure notes and payment cards** stored alongside passwords, with masked card numbers.
+- **Categories, favourites and instant search.**
+- **Password history.** See and restore the last 10 passwords of every login.
+- **Live 2FA codes.** Works like an authenticator app, with a countdown ring.
+
+**Safety**
+- **Zero-knowledge encryption.** Your master password never leaves your device.
+- **Recovery key.** A spare key that gets you back in if you forget your master password.
+- **Change master password** any time without touching your saved items.
+- **Passkey and biometric unlock.** Fingerprint, Face ID or Windows Hello on supported devices.
+- **Breach check.** Find out whether a password has leaked, without ever sending the password.
+- **Security audit.** A vault health score that flags weak, reused, old and breached passwords.
+- **Auto-lock** after 5 idle minutes, and the **clipboard clears** 30 seconds after copying.
+- **Strong password rules.** A master password must be 12+ characters and rated “Strong”, and sign-up passwords must be 12+ characters.
+- **Web hardening.** Security headers and a Content Security Policy limit which servers the app can talk to, and only `http(s)` links are opened.
+- **Verified sharing.** Shared vaults only work with verified email addresses, and a fingerprint lets you confirm you’re inviting the right person.
+
+**Together and portable**
+- **Shared vaults.** Share logins with family or a team, each vault with its own private key.
+- **Encrypted backup** and one-click **import** from Chrome / Edge, Bitwarden and 1Password.
+- **Installable app (PWA)** that opens full-screen and works offline.
+
+**Free tools (no account needed)**
+- **Strength checker.** Entropy, crack-time estimate, common-password, sequence and repetition detection.
+- **Password generator.** Cryptographically random, with every chosen character type guaranteed.
+
+**Design**
+- Mobile-first: bottom tab bar, floating add button and bottom-sheet forms on phones, sidebar layout on desktop.
+- Teal-to-lime-to-amber gradient theme, animations and a shield-and-keyhole logo.
+
+---
+
+Built by DarkWizardCK. Based on SecureSpark and PassVault.

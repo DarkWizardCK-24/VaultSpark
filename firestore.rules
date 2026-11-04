@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Encrypted blob: only opaque ciphertext + timestamps are allowed.
+    function validCredential() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['iv', 'ct', 'createdAt', 'updatedAt'])
+        && d.iv is string && d.iv.size() <= 32
+        && d.ct is string && d.ct.size() <= 40000
+        && d.createdAt is number && d.updatedAt is number;
+    }
+
+    match /users/{uid}/credentials/{id} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid) && validCredential();
+    }
+
+    // Vault metadata: salt, wrapped data keys (master / recovery / passkeys), encrypted RSA private key.
+    match /users/{uid}/meta/vault {
+      allow read, create, update: if isOwner(uid);
+      allow delete: if false;
+    }
+
+    // Public directory keyed by VERIFIED email address. Only the verified owner of an email can publish a key
+    // for it (no squatting / key substitution), single-document lookups only (no bulk listing of users).
+    match /publicKeys/{email} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create, update: if signedIn()
+        && request.auth.token.email_verified == true
+        && email == request.auth.token.email.lower()
+        && request.resource.data.keys().hasOnly(['uid', 'jwk'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.jwk is map;
+      allow delete: if false;
+    }
+
+    match /sharedVaults/{vid} {
+      allow read: if signedIn() && request.auth.uid in resource.data.memberUids;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['ownerUid', 'memberUids', 'members', 'nameSealed', 'keyVersion', 'createdAt'])
+        && request.resource.data.members is map
+        && request.resource.data.nameSealed is map
+        && request.resource.data.keyVersion is number
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.auth.uid in request.resource.data.memberUids
+        && request.resource.data.memberUids.size() == 1;
+      // Only the owner manages members / keys. ownerUid can never change.
+      allow update: if signedIn()
+        && resource.data.ownerUid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['ownerUid', 'memberUids', 'members', 'nameSealed', 'keyVersion', 'createdAt'])
+        && request.resource.data.members is map
+        && request.resource.data.ownerUid == resource.data.ownerUid
+        && request.auth.uid in request.resource.data.memberUids
+        && request.resource.data.memberUids.size() <= 25;
+      allow delete: if signedIn() && resource.data.ownerUid == request.auth.uid;
+
+      match /items/{iid} {
+        function isMember() {
+          return signedIn()
+            && request.auth.uid in get(/databases/$(database)/documents/sharedVaults/$(vid)).data.memberUids;
+        }
+        allow read, delete: if isMember();
+        allow create, update: if isMember()
+          && request.resource.data.keys().hasOnly(['iv', 'ct', 'createdAt', 'updatedAt', 'updatedBy', 'keyVersion'])
+          && request.resource.data.iv is string
+          && request.resource.data.ct is string && request.resource.data.ct.size() <= 40000
+          && request.resource.data.updatedBy == request.auth.uid;
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
