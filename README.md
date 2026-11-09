@@ -8,6 +8,8 @@
 
 Next.js · React · Tailwind CSS · Firebase Auth + Firestore
 
+[![CI](https://github.com/DarkWizardCK-24/VaultSpark/actions/workflows/ci.yml/badge.svg)](https://github.com/DarkWizardCK-24/VaultSpark/actions/workflows/ci.yml) [![Live demo](https://img.shields.io/badge/Live-demo-2ea44f?logo=vercel&logoColor=white)](https://vault-spark.vercel.app) ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white) ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+
 </div>
 
 VaultSpark combines two earlier projects:
